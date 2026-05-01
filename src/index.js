@@ -14,7 +14,7 @@ const submitRouter = require('./routes/submit');
 
 app.use(cors({
     
- origin:'https://axiomcode-frontend-kxjoi0opu-nikhileshadd1-8723s-projects.vercel.app',// '*' anyone can access 'http://localhost:5173',
+ origin:'https://axiomcode-frontend.vercel.app',// '*' anyone can access 'http://localhost:5173',
  credentials:true
 }))
 app.set('trust proxy', true); //taaki har baar proxy ka Ip nhi bheje rate limiter ko

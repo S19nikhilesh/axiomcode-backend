@@ -170,12 +170,12 @@ const getAllProblem=async(req,res)=>{
         // ?/getAllProblem?page=3&limit=10
         //await Problem.find().skip(no of docs to skip).limit(fixed 10)
         if(getProblem.length==0){
-            return res.status(404).send("no problems exists")
+            return res.status(200).json([]); 
         }
         
-        res.status(200).send(getProblem);
+        res.status(200).json(getProblem);
     }catch(err){
-        res.status(500).send("Error:"+err)
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
 }
 const getSolvedProblemsByUser=async (req,res) => {
