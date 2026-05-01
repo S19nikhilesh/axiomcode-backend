@@ -13,8 +13,7 @@ const redisClient=require("./config/redis");
 const submitRouter = require('./routes/submit');
 
 app.use(cors({
- origin:['https://axiomcode-frontend-pylguwsid-nikhileshadd1-8723s-projects.vercel.app/'],// '*' anyone can access
-//  origin: "*",
+ origin:['https://axiomcode-frontend-pylguwsid-nikhileshadd1-8723s-projects.vercel.app'],// '*' anyone can access
  credentials:true
 }))
 app.set('trust proxy', true); //taaki har baar proxy ka Ip nhi bheje rate limiter ko
