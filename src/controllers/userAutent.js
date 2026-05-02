@@ -19,7 +19,7 @@ const register= async(req,res)=>{
         const user= await User.create(req.body);
         //token bhi generate karwa de jwt.sign({emailId},"secet_key",{expiresIn: 60*60});
         const token=jwt.sign({_id:user._id,emailId:emailId,role:'user'},process.env.JWT_KEY,{expiresIn: 60*60});
-        res.cookie("token",token,{maxAge: 60*60*1000 });
+        res.cookie("token",token,{maxAge: 60*60*1000,httpOnly: true ,secure: true,sameSite: 'none' });
         // res.status(201).send("User Registered Successfully");
             //par kya faida sirf user login succesfully bhejne ka , hum ek extra call bcha skte hai as user login ,send user data
             const reply={
@@ -55,7 +55,7 @@ const login = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.cookie("token", token, { maxAge: 60 * 60 * 1000, httpOnly: true });
+        res.cookie("token", token, { maxAge: 60 * 60 * 1000, httpOnly: true ,secure: true,sameSite: 'none'});
 
         res.status(200).json({
             user: {
