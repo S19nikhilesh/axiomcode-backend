@@ -1,14 +1,14 @@
 const { GoogleGenAI } = require("@google/genai");
-const { response } = require("express");
 const solveDoubt = async (req, res) => {
 try {
 const { message, title, description, testCases, startCode } = req.body;
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
 
+async function main() {
 
-    const response = await ai.models.generateContentStream({
+    const response = await ai.models.generateContent({
         // Changed model name to the correct technical format
-        model: "gemini-2.5-flash-lite", 
+        model: "gemini-2.5-flash-lite",
         contents: message,
         config: {
             maxOutputTokens: 500,
@@ -32,23 +32,14 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY });
         }
     });
 
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
 
-        for await (const chunk of response) {
-            const chunkText = chunk.text; 
-            if (chunkText) {
-                res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
-            }
-        }
-    console.log(response.text);
-    res.end();
+    res.status(201).json({
+        message: response.text
+    });
+ console.log(response.text);
+}
 
-
-
-
-
+await main();
 
 } catch (err) {
 console.log(err);
@@ -57,5 +48,6 @@ res.status(500).json({
 });
 }}
 
-
 module.exports = solveDoubt;
+
+

@@ -160,11 +160,13 @@ const runCode=async (req,res) => {
         if (!submitResult.isCompiled) {
             status = "compile_error";
             errorMessage = submitResult.error || "CompileTime error";
+            output=submitResult.output;
         }
         
         else if (!submitResult.isExecutionSuccess) {
             status = "runtime_error";
             errorMessage = submitResult.error || "RunTime error";
+            output=submitResult.output;
         }
         
         else {
@@ -186,13 +188,13 @@ const runCode=async (req,res) => {
                 
                 const userOutput = cleanLines[failedIndex] || "No Output";
                 const expectedOutput = failedTestCase.output.trim();
-        
+                output=submitResult.output;
                 errorMessage = `Wrong Answer at Test Case ${failedIndex + 1}`;
                 detail = `Input: ${failedTestCase.input} | Expected: ${expectedOutput} | Your Output: ${userOutput}`;
             }
         }
     
-      
+        
         
         
         const results={
@@ -206,6 +208,7 @@ const runCode=async (req,res) => {
             detail:detail
         }
         
+        console.log(results.output)
         res.status(200).json({
             results:results,
             message:`Passed ${numberOfTestCasesPassed} / ${problem.visibleTestCases.length} testcases`
