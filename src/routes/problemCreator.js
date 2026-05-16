@@ -12,7 +12,7 @@ problemRouter.delete("/delete/:id",adminMiddleware,deleteProblem);
 
 //user access
 problemRouter.get("/ProblemById/:id",userMiddleware,getProblemById);
-problemRouter.get("/getAllProblem",userMiddleware,getAllProblem);
+problemRouter.get("/getAllProblem",getAllProblem);
 
 problemRouter.get("/solvedProblemsByUser",userMiddleware,getSolvedProblemsByUser);
 problemRouter.get("/submittedProblems/:pid",userMiddleware,getSubmittedProblems)
