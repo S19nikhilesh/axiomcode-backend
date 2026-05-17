@@ -42,7 +42,6 @@ const getDriverTemplate=(lang,USER_CODE,template_codes)=>{
           int t;
           if(!(cin >> t)) return 0;
           while(t--) {
-            ${config.hiddenStartCode || ""}
             ${config.functionCall || ""}
             cout << endl;
           }
@@ -62,7 +61,7 @@ const getDriverTemplate=(lang,USER_CODE,template_codes)=>{
           if(scanf("%d", &t) != 1) return 0;
   
           while(t--) {
-              ${config.hiddenStartCode || ""}
+             
               ${config.functionCall || ""}
               printf("\\n");
           }
@@ -84,7 +83,7 @@ const getDriverTemplate=(lang,USER_CODE,template_codes)=>{
                   Solution sol = new Solution(); 
                   
                   while (t-- > 0) {
-                      ${config.hiddenStartCode || ""}
+                      
                       ${config.functionCall || ""}
                       System.out.println();
                   }

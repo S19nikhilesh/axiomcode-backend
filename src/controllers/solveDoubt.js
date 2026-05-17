@@ -27,7 +27,8 @@ async function main() {
 1. **The Approach:** First, explain the logic/algorithm concisely (e.g., "Use a Hash Map to store frequencies...").
 2. **The Hints:** Point out potential bugs or edge cases based on problem constraints.
 3. **The Code:** If the user is stuck, provide the completed version of the function signature ONLY.
-- **Strict Restriction:** NEVER provide a 'main' function, header (#include)). Provide code inside the requested function format only.
+- **Strict Restriction:** NEVER provide a 'main' function, header (#include)).
+ %%strict instruction:**do no include any kind of comments in solution code in program%% . Provide code inside the requested function format only.
             `
         }
     });
