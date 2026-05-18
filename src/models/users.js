@@ -39,6 +39,14 @@ const userSchema=new Schema({
         }],
     
     },
+    potdStreak: {
+        type: Number,
+        default: 0 // Initial streak zero
+    },
+    lastPotdSolved: {
+        type: Date,
+        default: null // Streak valid hai ya nahi, check karne ke liye timestamp
+    },
     password:{
         type:String,
         required:true
