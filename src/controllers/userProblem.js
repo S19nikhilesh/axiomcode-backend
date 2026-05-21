@@ -2,6 +2,7 @@ const Problem=require("../models/problem");
 const {executeCode,checkOutput}=require("../utils/problemUtility");
 const User=require("../models/users");
 const Submission = require("../models/submission");
+const PotdStore = require('../models/potdStore');
 const adminMiddleware = require("../middlewares/adminMiddleware");
 const SolutionVideo = require("../models/solutionVideo")
 
@@ -200,7 +201,52 @@ const getSubmittedProblems = async (req, res) => {
         return res.status(500).send("Internal Server Error");
     }
 }
-module.exports={createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,getSolvedProblemsByUser,getSubmittedProblems};
+
+const getProblemOfTheDay = async (req, res) => {
+    try {
+        // ROW 1: Aaj ki date nikali "YYYY-MM-DD" format mein
+        const todayStr = new Date().toISOString().split('T')[0];
+        console.log(todayStr)
+        // ROW 2: Naye table mein check kiya ki kya aaj ki date ka koi lock sawaal hai?
+        // Humne .populate() lagaya hai taaki hume problem ki details (title, description) mil sakein
+        let currentPotd = await PotdStore.findOne({ dateString: todayStr }).populate({
+            path: 'problemId',
+            select: '_id title description difficulty tags hiddenTestCases visibleTestCases startCode referenceSolution'
+        });
+        
+        // ROW 3: Agar entry pehle se mil gayi (FETCH MODE)
+        if (currentPotd && currentPotd.problemId) {
+            // Hum yahan problemId nahi bhej rahe, populate ki wajah se us ID ka POORA DATA bhej rahe hain
+            return res.status(200).send(currentPotd.problemId);
+        }
+
+        // ROW 4: Agar aaj ka sawaal nahi mila (STORE MODE - Din ka pehla user)
+        const count = await Problem.countDocuments();
+        if (count === 0) {
+            return res.status(404).send("Database mein koi problem nahi mili");
+        }
+
+        // ROW 5: Random index nikala aur database se ek random question uthaya details ke sath
+        const randomIndex = Math.floor(Math.random() * count);
+        const randomProblem = await Problem.findOne()
+            .skip(randomIndex)
+            .select('_id title description difficulty tags hiddenTestCases visibleTestCases startCode referenceSolution');
+
+        // ROW 6: Naye table mein sirf aur sirf ID aur Date save karayi (Poora data save nahi kiya)
+        await PotdStore.findOneAndUpdate(
+            { dateString: todayStr },
+            { problemId: randomProblem._id }, // Dekho yahan sirf ID di hai table mein save hone ke liye!
+            { upsert: true, new: true }
+        );
+
+        // ROW 7: Pehle user ko bhi wahi poora problem ka data bhej diya jo select kiya tha
+        return res.status(200).send(randomProblem);
+
+    } catch (err) {
+        return res.status(500).send("Error: " + err.message);
+    }
+};
+module.exports={createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,getSolvedProblemsByUser,getSubmittedProblems,getProblemOfTheDay};
 
 
 // -d '{

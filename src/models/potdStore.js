@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const potdStoreSchema = new mongoose.Schema({
     problemId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Problem', // Jo bhi tera main Problem model ka naam hai
+        ref: 'problem', // Jo bhi tera main Problem model ka naam hai
         required: true
     },
     dateString: {
