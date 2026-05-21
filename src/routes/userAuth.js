@@ -32,5 +32,5 @@ authRouter.get('/check', userMiddleware, (req, res) => {
 });
 authRouter.delete('/delete',userMiddleware,deleteProfile)
 authRouter.get('/getprofile',userMiddleware,getProfile);
-authRouter.get('/updateprofile',userMiddleware,updateProfile);
+authRouter.put('/updateprofile',userMiddleware,updateProfile);
 module.exports= authRouter;
