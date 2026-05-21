@@ -204,42 +204,40 @@ const getSubmittedProblems = async (req, res) => {
 
 const getProblemOfTheDay = async (req, res) => {
     try {
-        // ROW 1: Aaj ki date nikali "YYYY-MM-DD" format mein
+        // ROW 1: Aaj ki date nikali
         const todayStr = new Date().toISOString().split('T')[0];
-        console.log(todayStr)
-        // ROW 2: Naye table mein check kiya ki kya aaj ki date ka koi lock sawaal hai?
-        // Humne .populate() lagaya hai taaki hume problem ki details (title, description) mil sakein
+        
+        // ROW 2: Database mein aaj ka locked sawaal dhoodha
         let currentPotd = await PotdStore.findOne({ dateString: todayStr }).populate({
             path: 'problemId',
             select: '_id title description difficulty tags hiddenTestCases visibleTestCases startCode referenceSolution'
         });
         
-        // ROW 3: Agar entry pehle se mil gayi (FETCH MODE)
+        // ROW 3: FETCH MODE (Agar entry mil gayi, direct problem bhej do)
         if (currentPotd && currentPotd.problemId) {
-            // Hum yahan problemId nahi bhej rahe, populate ki wajah se us ID ka POORA DATA bhej rahe hain
             return res.status(200).send(currentPotd.problemId);
         }
 
-        // ROW 4: Agar aaj ka sawaal nahi mila (STORE MODE - Din ka pehla user)
+        // ROW 4: STORE MODE (Din ka pehla user)
         const count = await Problem.countDocuments();
         if (count === 0) {
             return res.status(404).send("Database mein koi problem nahi mili");
         }
 
-        // ROW 5: Random index nikala aur database se ek random question uthaya details ke sath
+        // ROW 5: Random question select kiya
         const randomIndex = Math.floor(Math.random() * count);
         const randomProblem = await Problem.findOne()
             .skip(randomIndex)
             .select('_id title description difficulty tags hiddenTestCases visibleTestCases startCode referenceSolution');
 
-        // ROW 6: Naye table mein sirf aur sirf ID aur Date save karayi (Poora data save nahi kiya)
+        // ROW 6: Naye table mein ID lock ki
         await PotdStore.findOneAndUpdate(
             { dateString: todayStr },
-            { problemId: randomProblem._id }, // Dekho yahan sirf ID di hai table mein save hone ke liye!
+            { problemId: randomProblem._id }, 
             { upsert: true, new: true }
         );
 
-        // ROW 7: Pehle user ko bhi wahi poora problem ka data bhej diya jo select kiya tha
+        // ROW 7: Response bhej diya
         return res.status(200).send(randomProblem);
 
     } catch (err) {
