@@ -1,6 +1,6 @@
 const express=require('express');
 const authRouter=express.Router();
-const {register,login,logout,adminRegister,deleteProfile}=require("../controllers/userAutent")
+const {register,login,logout,adminRegister,deleteProfile,getProfile,updateProfile}=require("../controllers/userAutent")
 const userMiddleware=require('../middlewares/userMiddleware')
 const adminMiddleware=require('../middlewares/adminMiddleware')
 
@@ -31,6 +31,6 @@ authRouter.get('/check', userMiddleware, (req, res) => {
     })
 });
 authRouter.delete('/delete',userMiddleware,deleteProfile)
-// authRouter.get('/getprofile',getprofile);
-
+authRouter.get('/getprofile',userMiddleware,getProfile);
+authRouter.get('/updateprofile',userMiddleware,updateProfile);
 module.exports= authRouter;

@@ -133,6 +133,67 @@ try{
 }
 }
 
+const getProfile = async (req, res) => {
+    try {
+        // userMiddleware se logged-in user ki ID uthali
+        const userId = req.result._id;
 
-module.exports={register,login,logout,adminRegister,deleteProfile}
+        // Database se data uthaya aur password, roles vagar select se hata diye safety ke liye
+        const user = await User.findById(userId)
+            .select('firstName lastName emailId age role potdStreak lastPotdSolved PotdSolved ProblemSolved');
+
+        if (!user) {
+            return res.status(404).send("User nahi mila database mein");
+        }
+
+        // Saaf-suthra response bhej diya frontend ko
+        return res.status(200).json(user);
+
+    } catch (err) {
+        return res.status(500).send("Server Error: " + err.message);
+    }
+};
+
+
+const updateProfile = async (req, res) => {
+    try {
+        const userId = req.result._id;
+        const { firstName, lastName, age } = req.body;
+
+        // Validation Net: FirstName check karo kyunki schema mein required hai
+        if (!firstName || firstName.trim().length < 3 || firstName.trim().length > 20) {
+            return res.status(400).send("Error: First name 3 se 20 characters ka hona chahiye.");
+        }
+
+        if (lastName && (lastName.trim().length < 3 || lastName.trim().length > 20)) {
+            return res.status(400).send("Error: Last name 3 se 20 characters ka hona chahiye.");
+        }
+
+        if (age && (age < 6 || age > 80)) {
+            return res.status(400).send("Error: Age 6 aur 80 ke beech honi chahiye.");
+        }
+
+        // Sirf authorized fields ko hi update karenge (Email, Arrays aur Role ko touch nahi karenge)
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { 
+                $set: { 
+                    firstName: firstName.trim(), 
+                    lastName: lastName ? lastName.trim() : "", 
+                    age: age ? Number(age) : undefined 
+                } 
+            },
+            { new: true, runValidators: true } // runValidators lagane se schema limits cross nahi hongi
+        ).select('firstName lastName emailId age');
+
+        return res.status(200).json({
+            message: "Profile updated successfully!",
+            user: updatedUser
+        });
+
+    } catch (err) {
+        return res.status(400).send("Error updating profile: " + err.message);
+    }
+};
+module.exports={register,login,logout,adminRegister,deleteProfile,getProfile,updateProfile}
 
