@@ -47,6 +47,10 @@ const userSchema=new Schema({
         type: Date,
         default: null // Streak valid hai ya nahi, check karne ke liye timestamp
     },
+    PotdSolved: [{
+        type: Schema.Types.ObjectId,
+        ref: 'problem' // Jo tere Problem model ka asali naam hai
+    }],
     password:{
         type:String,
         required:true
