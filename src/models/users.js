@@ -43,6 +43,10 @@ const userSchema=new Schema({
         type: Number,
         default: 0 // Initial streak zero
     },
+    contestScore: {
+        type: Number,
+        default: 0
+    },
     lastPotdSolved: {
         type: Date,
         default: null // Streak valid hai ya nahi, check karne ke liye timestamp
