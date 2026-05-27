@@ -22,7 +22,8 @@ authRouter.get('/check', userMiddleware, (req, res) => {
         role: req.result.role,
         potdStreak: req.result.potdStreak || 0,
         // 🎯 Agar dono date match kar gayi, iska matlab bande ne aaj ka solve kar liya hai!
-        hasSolvedToday: lastSolvedStr === todayStr
+        hasSolvedToday: lastSolvedStr === todayStr,
+        contestScore:req.result.contestScore
     }
 
     res.status(200).json({

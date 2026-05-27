@@ -40,14 +40,15 @@ const register= async(req,res)=>{
 const login = async (req, res) => {
     try {
         const { emailId, password } = req.body;
+       
 
         const user = await User.findOne({ emailId });
 
         // If user doesn't exist, throw error immediately
-        if (!user) throw new Error("Invalid Credentials");
-
+        if (!user) throw new Error("Invalid Credentials user hai nhi");
+        
         const match = await bcrypt.compare(password, user.password);
-        if (!match) throw new Error("Invalid Credentials");
+        if (!match) throw new Error("Invalid Credentials password glt hai ");
 
         const token = jwt.sign(
             { _id: user._id, emailId: emailId, role: user.role },

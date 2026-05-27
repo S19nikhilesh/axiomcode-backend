@@ -1,4 +1,5 @@
 const Problem = require('../models/problem');
+const User = require('../models/users');
 
 const queue = [];
 const activeMatches = {};
@@ -49,28 +50,45 @@ const matchHandler = (io, socket) => {
         }
     });
 
-
-    socket.on('match_submit', ({ roomId, userId }) => {
+    socket.on('match_submit', async ({ roomId, userId }) => {
+        console.log("🎯 BACKEND RECEIVED SUBMIT FOR ROOM:", roomId, "FROM USER:", userId);
+        
         const currentMatch = activeMatches[roomId];
         
         if (currentMatch && !currentMatch.winner) {
-            currentMatch.winner = userId;
-
-            io.to(currentMatch.player1.socketId).emit('match_over', {
-                winnerId: userId,
-                message: currentMatch.player1.userId === userId ? 'Victory! You solved it first!' : 'Defeat! Opponent solved it first!'
-            });
-
-            io.to(currentMatch.player2.socketId).emit('match_over', {
-                winnerId: userId,
-                message: currentMatch.player2.userId === userId ? 'Victory! You solved it first!' : 'Defeat! Opponent solved it first!'
-            });
-
-            delete activeMatches[roomId];
+            currentMatch.winner = userId; // Redux wali exact User ID lock karo
+    
+            try {
+                // 🎯 DIRECT UPDATE: Jo frontend ne userId bheji hai, seedha uska score badhao
+                if (userId && userId !== "guest") {
+                    const updatedUser = await User.findByIdAndUpdate(
+                        userId, 
+                        { $inc: { contestScore: 10 } },
+                        { new: true } // Taaki updated data return ho
+                    );
+                    console.log(`✅ Score successfully updated to: ${updatedUser?.contestScore}`);
+                }
+    
+                // 📢 DONO PLAYERS KO ALERTS PUSH KARO
+                io.to(currentMatch.player1.socketId).emit('match_over', {
+                    winnerId: userId,
+                    message: currentMatch.player1.userId === userId ? 'Victory! You solved it first!' : 'Defeat! Opponent solved it first!'
+                });
+    
+                io.to(currentMatch.player2.socketId).emit('match_over', {
+                    winnerId: userId,
+                    message: currentMatch.player2.userId === userId ? 'Victory! You solved it first!' : 'Defeat! Opponent solved it first!'
+                });
+    
+                // Clean Memory
+                delete activeMatches[roomId];
+    
+            } catch (err) {
+                console.error('❌ Error updating score in DB:', err);
+            }
         }
     });
 
-    
     socket.on('leave_queue', (userData) => {
         const index = queue.findIndex(user => user.userId === userData.userId);
         if (index !== -1) {
