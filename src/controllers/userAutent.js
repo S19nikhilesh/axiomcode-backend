@@ -186,15 +186,18 @@ const updateProfile = async (req, res) => {
             },
             { new: true, runValidators: true } // runValidators lagane se schema limits cross nahi hongi
         ).select('firstName lastName emailId age');
-
+            
         return res.status(200).json({
             message: "Profile updated successfully!",
             user: updatedUser
+
         });
 
     } catch (err) {
         return res.status(400).send("Error updating profile: " + err.message);
     }
 };
+
+
 module.exports={register,login,logout,adminRegister,deleteProfile,getProfile,updateProfile}
 

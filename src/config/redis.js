@@ -4,8 +4,9 @@ const redisClient = createClient({
     username: 'default',
     password: process.env.REDIS_PASS,
     socket: {
-        host: 'redis-12296.c264.ap-south-1-1.ec2.cloud.redislabs.com',
-        port: 12296,
+        host: 'harmless-hornet-169897.upstash.io',
+        port: 6379,
+        tls:true,
         // Cloud Redis ke liye zaroori settings
         reconnectStrategy: (retries) => {
             console.log(`Redis reconnecting... Attempt: ${retries}`);
